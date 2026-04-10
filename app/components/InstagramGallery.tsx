@@ -1,56 +1,62 @@
 import ScrollReveal from "./ScrollReveal";
+import { fetchInstagramPosts } from "@/app/lib/instagram";
+import InstagramGalleryClient from "./InstagramGalleryClient";
 
-const galleryItems = [
-  {
-    gradient: "linear-gradient(135deg, #F5E6D3, #FDDDD6)",
-    aspect: "aspect-square",
-    span: "",
-  },
-  {
-    gradient: "linear-gradient(135deg, #5C3D2E, #8B6F47)",
-    aspect: "aspect-[3/4]",
-    span: "row-span-2",
-  },
-  {
-    gradient: "linear-gradient(135deg, #E8968A, #F5B8AC)",
-    aspect: "aspect-square",
-    span: "",
-  },
-  {
-    gradient: "linear-gradient(135deg, #3E2723, #6B4F37)",
-    aspect: "aspect-[4/3]",
-    span: "",
-  },
-  {
-    gradient: "linear-gradient(135deg, #FDDDD6, #E8B4B8)",
-    aspect: "aspect-square",
-    span: "",
-  },
-  {
-    gradient: "linear-gradient(135deg, #8B6F47, #B8986E)",
-    aspect: "aspect-[3/4]",
-    span: "row-span-2",
-  },
-  {
-    gradient: "linear-gradient(135deg, #D4716A, #E8968A)",
-    aspect: "aspect-square",
-    span: "",
-  },
-  {
-    gradient: "linear-gradient(135deg, #F5B8AC, #FFF0ED)",
-    aspect: "aspect-[4/5]",
-    span: "",
-  },
+/* ---------- Fallback estático (gradientes) ---------- */
+
+const fallbackItems = [
+  { gradient: "linear-gradient(135deg, #F5E6D3, #FDDDD6)", aspect: "aspect-square" },
+  { gradient: "linear-gradient(135deg, #5C3D2E, #8B6F47)", aspect: "aspect-[3/4]" },
+  { gradient: "linear-gradient(135deg, #E8968A, #F5B8AC)", aspect: "aspect-square" },
+  { gradient: "linear-gradient(135deg, #3E2723, #6B4F37)", aspect: "aspect-[4/3]" },
+  { gradient: "linear-gradient(135deg, #FDDDD6, #E8B4B8)", aspect: "aspect-square" },
+  { gradient: "linear-gradient(135deg, #8B6F47, #B8986E)", aspect: "aspect-[3/4]" },
+  { gradient: "linear-gradient(135deg, #D4716A, #E8968A)", aspect: "aspect-square" },
+  { gradient: "linear-gradient(135deg, #F5B8AC, #FFF0ED)", aspect: "aspect-[4/5]" },
 ];
 
-export default function InstagramGallery() {
+function FallbackGallery() {
+  return (
+    <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 lg:gap-5">
+      {fallbackItems.map((item, i) => (
+        <ScrollReveal key={i} delay={i * 80}>
+          <div className="img-zoom group relative mb-4 cursor-pointer overflow-hidden rounded-2xl lg:mb-5 lg:rounded-3xl">
+            <div
+              className={`w-full ${item.aspect}`}
+              style={{ background: item.gradient }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-choco-600/0 transition-all duration-500 group-hover:bg-choco-600/40">
+              <div className="flex items-center gap-4 opacity-0 transition-all duration-500 group-hover:opacity-100">
+                <span className="flex items-center gap-1.5 text-sm font-medium text-white">
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </span>
+                <span className="flex items-center gap-1.5 text-sm font-medium text-white">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- Componente principal (async server component) ---------- */
+
+export default async function InstagramGallery() {
+  const posts = await fetchInstagramPosts();
+
   return (
     <section id="galeria" className="relative overflow-hidden bg-white py-24 lg:py-32">
-      {/* Subtle background */}
       <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-rosa-50 blur-3xl" />
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-        {/* Section header */}
+        {/* Header da seção */}
         <ScrollReveal>
           <div className="mb-16 text-center">
             <span className="mb-3 inline-block font-body text-xs font-medium uppercase tracking-[0.3em] text-rosa-400">
@@ -66,44 +72,14 @@ export default function InstagramGallery() {
           </div>
         </ScrollReveal>
 
-        {/* Masonry gallery */}
-        <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 lg:gap-5">
-          {galleryItems.map((item, i) => (
-            <ScrollReveal key={i} delay={i * 80}>
-              <div
-                className="img-zoom group relative mb-4 cursor-pointer overflow-hidden rounded-2xl lg:mb-5 lg:rounded-3xl"
-              >
-                {/*
-                  SUBSTITUIR cada item com imagem real:
-                  <Image src={`/gallery-${i + 1}.jpg`} alt="Doce artesanal" width={400} height={500} className="object-cover w-full" />
-                */}
-                <div
-                  className={`w-full ${item.aspect}`}
-                  style={{ background: item.gradient }}
-                />
-                {/* Hover overlay with Instagram feel */}
-                <div className="absolute inset-0 flex items-center justify-center bg-choco-600/0 transition-all duration-500 group-hover:bg-choco-600/40">
-                  <div className="flex items-center gap-4 opacity-0 transition-all duration-500 group-hover:opacity-100">
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-white">
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                      </svg>
-                      {Math.floor(Math.random() * 200 + 50)}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-white">
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      {Math.floor(Math.random() * 30 + 5)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+        {/* Galeria real ou fallback */}
+        {posts && posts.length > 0 ? (
+          <InstagramGalleryClient posts={posts} />
+        ) : (
+          <FallbackGallery />
+        )}
 
-        {/* Instagram CTA */}
+        {/* CTA Instagram */}
         <ScrollReveal>
           <div className="mt-14 text-center">
             <a
